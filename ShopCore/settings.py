@@ -170,13 +170,13 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LEFT_AT': timedelta(days=3),
 }
 
-ROOT_URLCONF = 'soliquz.urls'
+
 SWAGGER_SETTINGS = {
     "DEFAULT_GENERATOR_CLASS": "drf_yasg.generators.OpenAPISchemaGenerator",
     # Other Swagger settings...
 }
 
-WSGI_APPLICATION = 'soliquz.wsgi.application'
+
 
 import os
 

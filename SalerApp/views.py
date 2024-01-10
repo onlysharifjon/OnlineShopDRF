@@ -2,10 +2,12 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from .serializers import ForLoginSerializer
 from drf_yasg.utils import swagger_auto_schema
-from .models import SalerRegister
+from .models import SalerRegister, ProductModel
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+
+from .serializers import FilterByCategorySerializer, SenderSerializer
 
 
 # Create your views here.
@@ -46,3 +48,18 @@ class LoginUzum(APIView):
         password = request.data.get('password')
         user = SalerRegister.objects.filter(login=login, password=password).first()
         return Response({"Login Success": user.id})
+
+
+class FiltrByCategory(APIView):
+    serializer_class = FilterByCategorySerializer
+    queryset = ProductModel.objects.all()
+
+    @swagger_auto_schema(request_body=FilterByCategorySerializer)
+    def post(self, request):
+        katalog = request.data.get('katalog')
+        filtr = ProductModel.objects.all().filter(katalog=katalog)
+        serializer = SenderSerializer(filtr, many=True)
+        if serializer:
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
