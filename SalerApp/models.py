@@ -52,12 +52,6 @@ class CategoryPartModel(models.Model):
         return str(self.sub_category)
 
 
-# class XiraPastPastakashMOdel(models.Model):
-#     sub_category = models.ForeignKey(CategoryPartModel, on_delete=models.CASCADE)
-#     xira_name = models.CharField(max_length=255, primary_key=True, unique=True)
-#
-#     def __str__(self):
-#         return str(self.xira_name)
 
 
 class ProductPartModel(models.Model):
@@ -71,8 +65,3 @@ class ProductPartModel(models.Model):
 
     def __str__(self):
         return self.product_name
-
-# ProductModel
-# CategoryPartModel
-# ProductPartModel
-# SalerRegister

@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
+
+from .paginations import LargeContentPaginate
 from .serializers import ForLoginSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .models import SalerRegister, ProductModel
@@ -53,7 +55,7 @@ class LoginUzum(APIView):
 class FiltrByCategory(APIView):
     serializer_class = FilterByCategorySerializer
     queryset = ProductModel.objects.all()
-
+    pagination_class = LargeContentPaginate
     @swagger_auto_schema(request_body=FilterByCategorySerializer)
     def post(self, request):
         katalog = request.data.get('katalog')
