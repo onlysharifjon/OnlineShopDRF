@@ -8,13 +8,14 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-API_TOKEN = '6471898526:AAEnym9ZK5smzee_UQAFaKERgeky4XbKv70'
+API_TOKEN = '6643960998:AAFNK97Rx7OsvLA7WDUYcxII4mBUnUs6dfc'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN, parse_mode='HTML')
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 from keyboards.default import asosiy_menyu
-from keyboards.inline import Katalog1,Katalog2
+from keyboards.inline import Katalog1, Katalog2
+
 
 @dp.message_handler(commands='start')
 async def starter(message: types.Message):
@@ -23,8 +24,16 @@ async def starter(message: types.Message):
 
 @dp.message_handler(text='Katalog')
 async def katalogcha(message: types.Message):
-    await message.answer('Kataloglar',reply_markup=Katalog1)
+    await message.answer('Kataloglar', reply_markup=Katalog1)
 
+
+@dp.callback_query_handler(text='oldinga')
+async def katalogcha(call: types.CallbackQuery):
+    await call.message.answer('Keyngi Menyu', reply_markup=Katalog2)
+
+@dp.callback_query_handler(text='orqaga')
+async def katalogcha(call: types.CallbackQuery):
+    await call.message.answer('Oldingi Menyu', reply_markup=Katalog1)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
