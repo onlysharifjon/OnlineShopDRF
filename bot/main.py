@@ -29,11 +29,15 @@ async def katalogcha(message: types.Message):
 
 @dp.callback_query_handler(text='oldinga')
 async def katalogcha(call: types.CallbackQuery):
-    await call.message.answer('Keyngi Menyu', reply_markup=Katalog2)
+    await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                        reply_markup=Katalog2)
+
 
 @dp.callback_query_handler(text='orqaga')
-async def katalogcha(call: types.CallbackQuery):
-    await call.message.answer('Oldingi Menyu', reply_markup=Katalog1)
+async def katalogcha2(call: types.CallbackQuery):
+    await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                        reply_markup=Katalog1)
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
