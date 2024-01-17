@@ -8,7 +8,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-API_TOKEN = '6471898526:AAEnym9ZK5smzee_UQAFaKERgeky4XbKv70'
+API_TOKEN = '6738700178:AAFuACw8qvc86gs0x28fTikL0DdB6fOJ200'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN, parse_mode='HTML')
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -24,6 +24,16 @@ async def starter(message: types.Message):
 @dp.message_handler(text='Katalog')
 async def katalogcha(message: types.Message):
     await message.answer('Kataloglar',reply_markup=Katalog1)
+
+@dp.callback_query_handler(text='oldinga')
+async def oldinga(call:types.CallbackQuery):
+    await call.message.delete()
+    await call.message.answer('Kataloglar',reply_markup=Katalog2)
+
+@dp.callback_query_handler(text='orqaga')
+async def orqaga(call:types.CallbackQuery):
+    await call.message.delete()
+    await call.message.answer('Kataloglar',reply_markup=Katalog1)
 
 
 if __name__ == '__main__':
