@@ -8,7 +8,9 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-API_TOKEN = '6643960998:AAFNK97Rx7OsvLA7WDUYcxII4mBUnUs6dfc'
+
+API_TOKEN = '6738700178:AAFuACw8qvc86gs0x28fTikL0DdB6fOJ200'
+
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN, parse_mode='HTML')
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -37,6 +39,8 @@ async def katalogcha(call: types.CallbackQuery):
 async def katalogcha2(call: types.CallbackQuery):
     await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,                         reply_markup=Katalog1)
 #
+
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
