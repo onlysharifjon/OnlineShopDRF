@@ -8,13 +8,20 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-API_TOKEN = '6738700178:AAFuACw8qvc86gs0x28fTikL0DdB6fOJ200'
+API_TOKEN = '5118382129:AAG66mR8-G-wqEisPlkIpyDzkAUPgoWAoQo'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN, parse_mode='HTML')
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 from keyboards.default import asosiy_menyu
-from keyboards.inline import Katalog1,Katalog2
+from keyboards.inline import Katalog1, Katalog2
+
+
+class SHogirdchalar(StatesGroup):
+    Katalog_Filter_state = State()
+    Category_Filter_state = State()
+    SubCategory_Filter_state = State()
+
 
 @dp.message_handler(commands='start')
 async def starter(message: types.Message):
@@ -23,17 +30,58 @@ async def starter(message: types.Message):
 
 @dp.message_handler(text='Katalog')
 async def katalogcha(message: types.Message):
-    await message.answer('Kataloglar',reply_markup=Katalog1)
+    await message.answer('Kataloglar', reply_markup=Katalog1)
+    await SHogirdchalar.Katalog_Filter_state.set()
 
-@dp.callback_query_handler(text='oldinga')
-async def oldinga(call:types.CallbackQuery):
-    await call.message.delete()
-    await call.message.answer('Kataloglar',reply_markup=Katalog2)
 
-@dp.callback_query_handler(text='orqaga')
-async def orqaga(call:types.CallbackQuery):
+@dp.callback_query_handler(text='oldinga',
+                           state=SHogirdchalar.Katalog_Filter_state)
+async def oldinga(call: types.CallbackQuery):
+    try:
+        await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                            reply_markup=Katalog2)
+    except:
+        await call.answer('Siz oldin << tugmasini bosing')
+
+
+@dp.callback_query_handler(text='orqaga',
+                           state=SHogirdchalar.Katalog_Filter_state)
+async def orqaga(call: types.CallbackQuery):
+    try:
+        await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                            reply_markup=Katalog1)
+    except:
+        await call.answer('Siz oldin >> tugmasini bosing')
+
+@dp.callback_query_handler(text='orqaga',
+                           state=SHogirdchalar.Category_Filter_state)
+async def orqaga(call: types.CallbackQuery):
+    try:
+        await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                            reply_markup=Katalog1)
+    except:
+        await call.answer('Siz oldin >> tugmasini bosing')
+# databaseeeeeeeeeeeeeeeeeeeeeee
+
+from sqlite3 import connect
+
+con = connect('db.sqlite3')
+cur = con.cursor()
+
+
+@dp.callback_query_handler(state=SHogirdchalar.Katalog_Filter_state)
+async def _filt_by_katalog(call: types.CallbackQuery, state: FSMContext):
+    await bot.answer_callback_query(callback_query_id=call.id)
+    tanlov_katalog = call.data
+    buttons = InlineKeyboardMarkup()
+    a = cur.execute('SELECT * FROM SalerApp_productmodel WHERE katalog = ?', (str(tanlov_katalog),)).fetchall()
+    for i in a:
+        buttons.add(InlineKeyboardButton(i[2], callback_data=i[2]))
+
+    buttons.add(InlineKeyboardButton('<<', callback_data='orqaga'))
     await call.message.delete()
-    await call.message.answer('Kataloglar',reply_markup=Katalog1)
+    await bot.send_message(call.message.chat.id, 'Kategoriyalar', reply_markup=buttons)
+    await SHogirdchalar.Category_Filter_state.set()
 
 
 if __name__ == '__main__':

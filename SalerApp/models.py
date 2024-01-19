@@ -36,7 +36,7 @@ class ProductModel(models.Model):
         ("Kitoblar", "Kitoblar"),
         ("Dacha, Bog' va tomorqa", "Dacha, Bog' va tomorqa")
     )
-    katalog = models.CharField(choices=choise_katalog, max_length=255, primary_key=True, unique=True)
+    katalog = models.CharField(choices=choise_katalog, max_length=255)
     kategoriya = models.CharField(max_length=255)
 
     def __str__(self):
