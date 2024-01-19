@@ -7,7 +7,7 @@ from aiogram.types import ReplyKeyboardRemove
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-
+# from aiogram.dispatcher.filters import Text
 API_TOKEN = '5118382129:AAG66mR8-G-wqEisPlkIpyDzkAUPgoWAoQo'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN, parse_mode='HTML')
