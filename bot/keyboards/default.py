@@ -11,5 +11,6 @@ asosiy_menyu = ReplyKeyboardMarkup(
         [
             KeyboardButton('Savatcha')
         ]
-    ]
+    ],
+    resize_keyboard=True
 )

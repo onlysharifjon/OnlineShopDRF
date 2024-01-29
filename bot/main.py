@@ -2,14 +2,14 @@ import logging
 from aiogram import executor
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 # from aiogram.dispatcher.filters import Text
-API_TOKEN = '5118382129:AAG66mR8-G-wqEisPlkIpyDzkAUPgoWAoQo'
+API_TOKEN = '5118382129:AAGNQiGeZEKB6tSy846WrWOh7v1ftBCtSZ4'
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN, parse_mode='HTML')
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -22,6 +22,7 @@ class SHogirdchalar(StatesGroup):
     Katalog_Filter_state = State()
     Category_Filter_state = State()
     Mahsulot_Filter_state = State()
+    product_state = State()
 
 
 @dp.message_handler(commands='start')
@@ -46,6 +47,18 @@ async def oldinga(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(text='orqaga',
+                           state=SHogirdchalar.Mahsulot_Filter_state)
+async def orqaga1(call: types.CallbackQuery):
+    try:
+        await bot.edit_message_text(message_id=call.message.message_id, text="Kataloglar", chat_id=call.message.chat.id)
+        await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                            reply_markup=Katalog1)
+        await SHogirdchalar.Katalog_Filter_state.set()
+    except:
+        await call.answer('Siz oldin >> tugmasini bosing')
+
+
+@dp.callback_query_handler(text='orqaga',
                            state=SHogirdchalar.Katalog_Filter_state)
 async def orqaga1(call: types.CallbackQuery):
     try:
@@ -61,12 +74,9 @@ async def orqaga2(call: types.CallbackQuery):
     try:
         await bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id,
                                             reply_markup=Katalog1)
+        await SHogirdchalar.Katalog_Filter_state.set()
     except:
         await call.answer('Siz oldin >> tugmasini bosing')
-
-
-
-
 
 
 # databaseeeeeeeeeeeeeeeeeeeeeee
@@ -108,7 +118,11 @@ async def _filt_by_category(call: types.CallbackQuery, state: FSMContext):
 
     sub_buttons.add(InlineKeyboardButton('<<', callback_data='orqaga'))
     print(sub_category_filter)
-    await call.message.answer(f'{call.data}', reply_markup=sub_buttons)
+    # await call.message.answer(f'{call.data}', reply_markup=sub_buttons)
+    await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.message.chat.id, text=f"{call.data}")
+    await bot.edit_message_reply_markup(message_id=call.message.message_id, chat_id=call.message.chat.id,
+                                        reply_markup=sub_buttons)
+
     await SHogirdchalar.Mahsulot_Filter_state.set()
 
 
@@ -122,8 +136,42 @@ async def mahsulot_sender(call: types.CallbackQuery, state: FSMContext):
         mahsulotlar_button.add(InlineKeyboardButton(text=f'{i[0]}', callback_data=i[0]))
 
     mahsulotlar_button.add(InlineKeyboardButton('<<', callback_data='orqaga'))
-    await call.message.answer(call.data, reply_markup=mahsulotlar_button)
+    # await call.message.answer(call.data, reply_markup=mahsulotlar_button)
+    await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.message.chat.id, text=f"{call.data}")
+    await bot.edit_message_reply_markup(message_id=call.message.message_id, chat_id=call.message.chat.id,
+                                        reply_markup=mahsulotlar_button)
+    await SHogirdchalar.product_state.set()
 
+
+@dp.callback_query_handler(state=SHogirdchalar.product_state)
+async def maxsulot(call: types.CallbackQuery, state: FSMContext):
+    full_data = cur.execute('SELECT * FROM SalerApp_productpartmodel WHERE product_name = ?', (call.data,)).fetchmany()
+
+    tr = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text='Sotib olish', callback_data=f'{full_data[0][0]}')
+            ],
+            [
+                InlineKeyboardButton(text='Orqaga qaytish', callback_data='back')
+            ]
+        ]
+    )
+    print(full_data)
+    txt = f"""
+🆔: {full_data[0][0]}
+🛍: {full_data[0][1]}
+💰: {full_data[0][2]} so'm
+📄: {full_data[0][-1]}
+"""
+    photos = [
+        InputMediaPhoto(open(f'C:/Users/momin/PycharmProjects/OnlineShopDRF/{full_data[0][3]}', 'rb'), ),
+        InputMediaPhoto(open(f'C:/Users/momin/PycharmProjects/OnlineShopDRF/{full_data[0][4]}', 'rb')),
+        InputMediaPhoto(open(f'C:/Users/momin/PycharmProjects/OnlineShopDRF/{full_data[0][5]}', 'rb'),caption=txt),
+    ]
+    await call.message.delete()
+    await call.message.answer_media_group(media=photos)
+    await call.message.answer('Menyulardan birini tanlang!', reply_markup=tr)
 
 
 if __name__ == '__main__':
